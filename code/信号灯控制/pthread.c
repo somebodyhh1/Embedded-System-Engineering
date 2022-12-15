@@ -70,13 +70,14 @@ void* run_automatically(void* data) {
 		"STRB R5,[R4];"
 			
 	);
-	unsigned char state[2]={ 0xBE, 0xDD};
-	int cur = 0;
+	//自动变换代码
+	unsigned char state[2]={ 0xBE, 0xDD}; //分别对应东西南北向通行的状态
+	int cur = 0;  //curr代表当前状态，随时间改变
 	while (1) {
-		LEDWORD=state[cur]<<8|0xff;
+		LEDWORD=state[cur]<<8|0xff;  //设置相应控制字
 		ioctl(fd,0x12,LEDWORD);
         jmdelay(3000);
-		cur=1-cur;
+		cur=1-cur;  //反转当前状态
 	}
 	printf("will enter TUBE LED  ,please waiting .............. \n");
     LEDWORD=0xff00;
@@ -207,17 +208,16 @@ void * consumer(void * data)
   return NULL;
 }
 /*--------------------------------------------------------*/
-
+//手动切换代码
 void* change_maually(void* data){
-
 	while(true){
-		getchar();
-		cur=1-cur;
+		char c=getchar();  //获取手动控制信号
+		if(c!='s') continue;
+		cur = 1 - cur;  //反转状态
 		LEDWORD=state[cur]<<8|0xff;
 		ioctl(fd,0x12,LEDWORD);
         jmdelay(3000);
 	}
-
 }
 
 int main(void)
